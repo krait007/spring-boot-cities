@@ -30,32 +30,32 @@ subprojects {
     }
 }
 
-project(':cities-service') {
-    apply plugin: 'spring-boot'
-
-    jar {
-        baseName = 'cities-service'
-        version = ''
-    }
-
-    dependencies {
-        // Spring
-        compile("org.springframework.boot:spring-boot-starter-web")
-        compile("org.springframework.boot:spring-boot-starter-data-jpa")
-        compile("org.springframework.boot:spring-boot-starter-actuator")
-        compile("org.springframework.boot:spring-boot-starter-data-rest")
-        compile("org.springframework.cloud:spring-cloud-spring-service-connector:${springCloudVersion}")
-        compile("org.springframework.cloud:spring-cloud-cloudfoundry-connector:${springCloudVersion}")
-
-        // JDBC drivers
-        runtime("org.hsqldb:hsqldb")
-        runtime("mysql:mysql-connector-java:5.1.25")
-
-        testCompile("junit:junit")
-
-        versionManagement 'io.spring.platform:platform-versions:1.0.2.RELEASE@properties'
-    }
-}
+//project(':cities-service') {
+//    apply plugin: 'spring-boot'
+//
+//    jar {
+//        baseName = 'cities-service'
+//        version = ''
+//    }
+//
+//    dependencies {
+//        // Spring
+//        compile("org.springframework.boot:spring-boot-starter-web")
+//        compile("org.springframework.boot:spring-boot-starter-data-jpa")
+//        compile("org.springframework.boot:spring-boot-starter-actuator")
+//        compile("org.springframework.boot:spring-boot-starter-data-rest")
+//        compile("org.springframework.cloud:spring-cloud-spring-service-connector:${springCloudVersion}")
+//        compile("org.springframework.cloud:spring-cloud-cloudfoundry-connector:${springCloudVersion}")
+//
+//        // JDBC drivers
+//        runtime("org.hsqldb:hsqldb")
+//        runtime("mysql:mysql-connector-java:5.1.25")
+//
+//        testCompile("junit:junit")
+//
+//        versionManagement 'io.spring.platform:platform-versions:1.0.2.RELEASE@properties'
+//    }
+//}
 
 project(':cities-client') {
     jar {
