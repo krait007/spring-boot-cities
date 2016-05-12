@@ -1,0 +1,45 @@
+resources:
+- name: cities-repo
+  type: git
+  source:
+    uri: https://github.com/gaos1/spring-boot-cities.git
+    branch: master
+
+- name: resource-deploy-cities-service-staging
+  type: cf
+  source:
+    api: https://api.local.pcfdev.io
+    username: admin
+    password: admin
+    organization: pcfdev-org
+    space: staging
+    skip_cert_check: true
+
+- name: resource-deploy-cities-service-prod
+  type: cf
+  source:
+    api: https://api.local.pcfdev.io
+    username: admin
+    password: admin
+    organization: pcfdev-org
+    space: prod
+    skip_cert_check: true
+
+jobs:
+- name: cities-service
+  plan:
+  - get: cities-repo
+    trigger: true
+  - task: run-unit
+    file: cities-repo/ci/task-unit.yml
+  - put: resource-deploy-cities-service-staging
+    params:
+      manifest: cities-repo/cities-service/manifest.yml
+      environment_variables:
+        current_app_name: cities-service-staging
+        path: cities-repo/build/libs/cities-service.jar
+  - task: run-acceptance-tests
+    file: cities-repo/ci/task-acceptance-tests.yml
+    config:
+      params:
+        CITY_SERVICE_URI: http://cities-service-staging.local.pcfdev.io
