@@ -8,10 +8,17 @@ image_resource:
 inputs:
 - name: cities-repo
 
+outputs:
+- name: cities-service-build
+
 run:
   path: bash
   args: 
   - -c
   - |
     cd cities-repo/cities-service 
-    ../gradlew build 
+    mkdir -p build/libs/
+    touch build/libs/cities-service.jar
+    cp build/libs/cities-service.jar ../../cities-service-build/
+
+# ../gradlew build     
