@@ -12,4 +12,6 @@ run:
   path: bash
   args: 
   - -c
-  - cd cities-repo/cities-service && ../gradlew build && pwd && ls -l 
+  - |
+    cd cities-repo/cities-service 
+    ../gradlew build 
