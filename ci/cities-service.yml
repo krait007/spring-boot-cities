@@ -1,0 +1,127 @@
+resources:
+- name: cities-repo
+  type: git
+  source:
+    uri: https://github.com/gaos1/spring-boot-cities.git
+    branch: master
+
+- name: release-time
+  type: time
+  source: 
+    days:
+    - Friday
+    start: 8:00 +0800
+    stop: 8:30 +0800
+
+- name: cities-release
+  type: github-release
+  source:
+    user: gaos1
+    repository: spring-boot-cities
+    access_token: 9ab9ea71f4428214d9a539bf8d0445bb36d0441d
+
+- name: resource-cf-test
+  type: cf
+  source:
+    api: https://api.local.pcfdev.io
+    username: admin
+    password: admin
+    organization: pcfdev-org
+    space: test
+    skip_cert_check: true
+
+- name: resource-cf-staging
+  type: cf
+  source:
+    api: https://api.local.pcfdev.io
+    username: admin
+    password: admin
+    organization: pcfdev-org
+    space: staging
+    skip_cert_check: true
+
+
+- name: resource-cf-prod
+  type: cf
+  source:
+    api: https://api.local.pcfdev.io
+    username: admin
+    password: admin
+    organization: pcfdev-org
+    space: staging
+    skip_cert_check: true
+
+jobs:
+- name: run-unit-test
+  plan:
+  - get: cities-repo
+    trigger: true
+  - task: run-unit
+    file: cities-repo/ci/task-unit.yml
+
+- name: run-acceptance-tests
+  plan:
+  - get: cities-repo
+    trigger: true
+    passed: [run-unit-test]
+  - task: run-unit
+    file: cities-repo/ci/task-unit.yml
+  - put: resource-cf-test
+    params:
+      manifest: cities-repo/cities-service/manifest-test.yml
+      environment_variables:
+        path: cities-service-build/cities-service.jar 
+  - task: run-acceptance-tests
+    file: cities-repo/ci/task-acceptance-tests.yml
+    config:
+      params:
+        CITY_SERVICE_URI: http://cities-test.local.pcfdev.io
+
+- name: publish-release
+  plan:
+  - get: cities-repo
+    passed: [run-acceptance-tests]
+  - get: release-time
+    trigger: true
+  - task: run-unit
+    file: cities-repo/ci/task-unit.yml
+  - put: cities-release
+    params:
+      name: cities-repo/cities-service/release/name.txt
+      tag: cities-repo/cities-service/release/tag.txt
+      globs:
+      - cities-service-build/cities-service.jar
+
+- name: deploy-to-staging
+  plan:
+  - aggregate:
+    - get: cities-repo
+      passed: [run-unit-test]
+    - get: cities-release
+      trigger: true
+      passed: [publish-release]
+  - put: resource-cf-staging
+    params:
+      manifest: cities-repo/cities-service/manifest-staging.yml
+      environment_variables:
+        path: cities-release/cities-service.jar 
+  - task: run-acceptance-tests
+    file: cities-repo/ci/task-acceptance-tests.yml
+    config:
+      params:
+        CITY_SERVICE_URI: http://cities-staging.local.pcfdev.io
+
+- name: deploy-to-prod
+  plan:
+  - aggregate:
+    - get: cities-repo
+      passed: [deploy-to-staging]
+    - get: cities-release
+      trigger: true
+      passed: [deploy-to-staging]
+  - put: resource-cf-prod
+    params:
+      manifest: cities-repo/cities-service/manifest.yml
+      environment_variables:
+        current_app_name: cities-service
+        path: cities-release/cities-service.jar 
