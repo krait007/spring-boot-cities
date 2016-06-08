@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-        mavenCentral()
+        maven { url 'http://maven.oschina.net/content/groups/public/'}
         maven { url "http://repo.spring.io/milestone" }
     }
     dependencies {
@@ -15,7 +15,7 @@ apply plugin: 'spring-boot'
 apply plugin: 'cloudfoundry'
 
 repositories {
-    maven{ url 'http://maven.oschina.net/content/groups/public/'}
+    maven { url 'http://maven.oschina.net/content/groups/public/'}
     maven { url "http://repo.spring.io/milestone" }
 }
 
