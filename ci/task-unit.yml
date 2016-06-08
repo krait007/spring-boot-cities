@@ -16,6 +16,7 @@ run:
   args: 
   - -c
   - |
+    export TERM=${TERM:-dumb}
     cd cities-repo/cities-service 
     gradle build         
     cp build/libs/cities-service.jar ../../cities-service-build/
