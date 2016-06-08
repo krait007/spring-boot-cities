@@ -16,7 +16,6 @@ apply plugin: 'cloudfoundry'
 
 repositories {
     maven{ url 'http://maven.oschina.net/content/groups/public/'}
-    mavenCentral()
     maven { url "http://repo.spring.io/milestone" }
 }
 

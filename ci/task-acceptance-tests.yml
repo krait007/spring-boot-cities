@@ -15,4 +15,4 @@ run:
   - export CITY_SERVICE_URI={{CITY_SERVICE_URI}}
   - export CITY_SERVICE_PORT=80
   - cd cities-repo/acceptance-tests
-  - ../gradlew test
+  - gradle test

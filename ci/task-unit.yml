@@ -17,5 +17,5 @@ run:
   - -c
   - |
     cd cities-repo/cities-service 
-    ../gradlew build         
+    gradle build         
     cp build/libs/cities-service.jar ../../cities-service-build/
